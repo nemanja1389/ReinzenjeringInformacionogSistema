@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 
 import geometry.Point;
@@ -165,11 +166,20 @@ public class Controller {
 				while (it.hasNext()){
 					Shape s = (Shape)it.next();
 					if(s.isSelected()){					
-						int poruka = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da želite da obrišete oblik?", "Upozorenje!", JOptionPane.WARNING_MESSAGE);
-						if (poruka == JOptionPane.OK_OPTION){
-							it.remove();
-						}
+						it.remove();
 					}
+				}
+			}
+		});
+		
+		getFrame().getBtnLineColor().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				lineColor = JColorChooser.showDialog(null, "Izaberi boju", lineColor);
+				if(lineColor != null){
+					lineColor = lineColor;
+					frame.getBtnLineColor().setBackground(lineColor);
 				}
 			}
 		});

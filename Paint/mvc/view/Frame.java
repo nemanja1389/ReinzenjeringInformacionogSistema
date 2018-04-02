@@ -25,6 +25,7 @@ public class Frame extends JFrame {
 	/**
 	 * 
 	 */
+	private Color lineColor = Color.BLACK;
 	private JPanel contentPane;
 	private View paintPnl;
 	private JPanel toolPnl;
@@ -87,6 +88,8 @@ public class Frame extends JFrame {
 		toolPnl.add(btnDelete);
 		
 		btnLineColor = new JButton("Line Color");
+		btnLineColor.setBackground(lineColor);
+		btnLineColor.setForeground(Color.WHITE);
 		toolPnl.add(btnLineColor);
 	}
 
