@@ -14,6 +14,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JTextArea;
+import java.awt.SystemColor;
 
 /**
  * 
@@ -29,11 +31,14 @@ public class Frame extends JFrame {
 	private JPanel contentPane;
 	private View paintPnl;
 	private JPanel toolPnl;
+	private JPanel coordPnl;
 	private JToggleButton tglbtnPoint;
 	private JToggleButton tglbtnSelect;
 	private JButton btnDelete;
 	private JButton btnLineColor;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private JTextArea coordText;
+	
 	
 	/**
 	 * Launch the application.
@@ -91,6 +96,14 @@ public class Frame extends JFrame {
 		btnLineColor.setBackground(lineColor);
 		btnLineColor.setForeground(Color.WHITE);
 		toolPnl.add(btnLineColor);
+		
+		coordPnl = new JPanel();
+		contentPane.add(coordPnl, BorderLayout.SOUTH);
+		coordPnl.setLayout(new BoxLayout(coordPnl, BoxLayout.X_AXIS));
+		
+		coordText = new JTextArea();
+		coordText.setBackground(SystemColor.menu);
+		coordPnl.add(coordText);
 	}
 
 	/**
@@ -123,6 +136,22 @@ public class Frame extends JFrame {
 	 */
 	public void setToolPnl(JPanel toolPnl) {
 		this.toolPnl = toolPnl;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JPanel getCoordPnl() {
+		return coordPnl;
+	}
+
+	/**
+	 * 
+	 * @param coordPnl
+	 */
+	public void setCoordPnl(JPanel coordPnl) {
+		this.coordPnl = coordPnl;
 	}
 
 	/**
@@ -187,6 +216,22 @@ public class Frame extends JFrame {
 	 */
 	public void setBtnLineColor(JButton btnLineColor) {
 		this.btnLineColor = btnLineColor;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JTextArea getCoordText() {
+		return coordText;
+	}
+
+	/**
+	 * 
+	 * @param coordText
+	 */
+	public void setCoordText(JTextArea coordText) {
+		this.coordText = coordText;
 	}
 	
 	

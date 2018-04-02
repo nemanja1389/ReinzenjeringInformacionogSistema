@@ -130,8 +130,12 @@ public class Controller {
 	 * 
 	 */
 	public void showPaint() {
+		
 		getView().addMouseListener(new MouseAdapter() {
 			
+			/**
+			 * 
+			 */
 			@Override
 			public void mouseClicked(MouseEvent e){
 				if(frame.getTglbtnPoint().isSelected()){
@@ -155,11 +159,33 @@ public class Controller {
 					}
 				}
 			
-			}	
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void mouseExited(MouseEvent e) {
+				getFrame().getCoordText().setText("");
+			}
+		});
+		
+		getView().addMouseMotionListener(new MouseAdapter() {
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				getFrame().getCoordText().setText("X: " + e.getX() + "   Y: " + e.getY());
+			}
 		});
 		
 		getFrame().getBtnDelete().addActionListener(new ActionListener() {
 			
+			/**
+			 * 
+			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Iterator it = model.getShapeList().iterator();
@@ -174,6 +200,9 @@ public class Controller {
 		
 		getFrame().getBtnLineColor().addActionListener(new ActionListener() {
 			
+			/**
+			 * 
+			 */
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				lineColor = JColorChooser.showDialog(null, "Izaberi boju", lineColor);
