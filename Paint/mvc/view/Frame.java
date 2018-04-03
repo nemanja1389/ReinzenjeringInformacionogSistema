@@ -16,6 +16,7 @@ import javax.swing.JToggleButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import java.awt.SystemColor;
+import javax.swing.JTabbedPane;
 
 /**
  * 
@@ -36,8 +37,13 @@ public class Frame extends JFrame {
 	private JToggleButton tglbtnSelect;
 	private JButton btnDelete;
 	private JButton btnLineColor;
+	private JButton btnSave;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextArea coordText;
+	private JTabbedPane tabbedPane;
+	private JPanel paintTab;
+	private JPanel logPnl;
+	private JTextArea logTextArea;
 	
 	
 	/**
@@ -66,7 +72,6 @@ public class Frame extends JFrame {
 		this.paintPnl.setBackground(Color.WHITE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setExtendedState(MAXIMIZED_BOTH);
-		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -75,11 +80,22 @@ public class Frame extends JFrame {
 		/**
 		 * 
 		 */
-		contentPane.add(paintPnl, BorderLayout.CENTER);
+		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		
+		paintTab = new JPanel();
+		tabbedPane.addTab("Paint", null, paintTab, null);
+		paintTab.setLayout(new BorderLayout(0, 0));
+		
+		paintTab.add(paintPnl, BorderLayout.CENTER);
 		
 		toolPnl = new JPanel();
-		contentPane.add(toolPnl, BorderLayout.NORTH);
+		paintTab.add(toolPnl, BorderLayout.NORTH);
 		toolPnl.setLayout(new BoxLayout(toolPnl, BoxLayout.X_AXIS));
+		
+		btnSave = new JButton("Save");
+		toolPnl.add(btnSave);
 		
 		tglbtnPoint = new JToggleButton("Point");
 		buttonGroup.add(tglbtnPoint);
@@ -98,12 +114,19 @@ public class Frame extends JFrame {
 		toolPnl.add(btnLineColor);
 		
 		coordPnl = new JPanel();
-		contentPane.add(coordPnl, BorderLayout.SOUTH);
+		paintTab.add(coordPnl, BorderLayout.SOUTH);
 		coordPnl.setLayout(new BoxLayout(coordPnl, BoxLayout.X_AXIS));
 		
 		coordText = new JTextArea();
 		coordText.setBackground(SystemColor.menu);
 		coordPnl.add(coordText);
+		
+		logPnl = new JPanel();
+		tabbedPane.addTab("Log", null, logPnl, null);
+		logPnl.setLayout(new BorderLayout(0, 0));
+		
+		logTextArea = new JTextArea();
+		logPnl.add(logTextArea, BorderLayout.CENTER);
 	}
 
 	/**
@@ -217,6 +240,22 @@ public class Frame extends JFrame {
 	public void setBtnLineColor(JButton btnLineColor) {
 		this.btnLineColor = btnLineColor;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JButton getBtnSave() {
+		return btnSave;
+	}
+
+	/**
+	 * 
+	 * @param btnSave
+	 */
+	public void setBtnSave(JButton btnSave) {
+		this.btnSave = btnSave;
+	}
 
 	/**
 	 * 
@@ -232,6 +271,22 @@ public class Frame extends JFrame {
 	 */
 	public void setCoordText(JTextArea coordText) {
 		this.coordText = coordText;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JTextArea getLogTextArea() {
+		return logTextArea;
+	}
+
+	/**
+	 * 
+	 * @param logTextArea
+	 */
+	public void setLogTextArea(JTextArea logTextArea) {
+		this.logTextArea = logTextArea;
 	}
 	
 	

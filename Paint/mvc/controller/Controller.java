@@ -6,10 +6,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import geometry.Point;
@@ -140,6 +145,7 @@ public class Controller {
 			public void mouseClicked(MouseEvent e){
 				if(frame.getTglbtnPoint().isSelected()){
 					model.getShapeList().add(new Point(e.getX(), e.getY(), lineColor));
+					getFrame().getLogTextArea().append("Add: "+ new Point(e.getX(), e.getY(), lineColor).toString() + '\n');
 					
 				} else if(frame.getTglbtnSelect().isSelected()){
 					
@@ -209,6 +215,42 @@ public class Controller {
 				if(lineColor != null){
 					lineColor = lineColor;
 					frame.getBtnLineColor().setBackground(lineColor);
+				}
+			}
+		});
+		
+		getFrame().getBtnSave().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				File selectedFile = null;
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
+				
+				int result = fileChooser.showSaveDialog(getFrame().getPaintPnl());
+				if (result == JFileChooser.APPROVE_OPTION) {
+					if(!fileChooser.getSelectedFile().getAbsolutePath().endsWith(".log")){
+						selectedFile = new File(fileChooser.getSelectedFile() + ".log");
+					}
+					BufferedWriter writer = null;
+					try {
+						writer = new BufferedWriter(new FileWriter(selectedFile.getAbsolutePath()));
+					} catch (IOException ee) {
+						JOptionPane.showMessageDialog(null, "File format is not correct.", "Warning!", JOptionPane.WARNING_MESSAGE );
+						ee.printStackTrace();
+					} 
+					try {
+						getFrame().getLogTextArea().write(writer);
+					} catch (IOException ee) {
+						JOptionPane.showMessageDialog(null, "File format is not correct.", "Warning!", JOptionPane.WARNING_MESSAGE );
+						ee.printStackTrace();
+					}
+					try {
+						writer.close();
+					} catch (IOException ee) {
+						JOptionPane.showMessageDialog(null, "File format is not correct.", "Warning!", JOptionPane.WARNING_MESSAGE );
+						ee.printStackTrace();
+					}
 				}
 			}
 		});
