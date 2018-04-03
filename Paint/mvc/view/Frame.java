@@ -35,17 +35,18 @@ public class Frame extends JFrame {
 	private JPanel coordPnl;
 	private JToggleButton tglbtnPoint;
 	private JToggleButton tglbtnSelect;
+	private JToggleButton tglbtnLine;
 	private JButton btnDelete;
 	private JButton btnLineColor;
 	private JButton btnSave;
+	private JButton btnOpen;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextArea coordText;
 	private JTabbedPane tabbedPane;
 	private JPanel paintTab;
 	private JPanel logPnl;
 	private JTextArea logTextArea;
-	
-	
+		
 	/**
 	 * Launch the application.
 	 */
@@ -94,12 +95,19 @@ public class Frame extends JFrame {
 		paintTab.add(toolPnl, BorderLayout.NORTH);
 		toolPnl.setLayout(new BoxLayout(toolPnl, BoxLayout.X_AXIS));
 		
+		btnOpen = new JButton("Open");
+		toolPnl.add(btnOpen);
+		
 		btnSave = new JButton("Save");
 		toolPnl.add(btnSave);
 		
 		tglbtnPoint = new JToggleButton("Point");
 		buttonGroup.add(tglbtnPoint);
 		toolPnl.add(tglbtnPoint);
+		
+		tglbtnLine = new JToggleButton("Line");
+		buttonGroup.add(tglbtnLine);
+		toolPnl.add(tglbtnLine);
 		
 		tglbtnSelect = new JToggleButton("Select");
 		buttonGroup.add(tglbtnSelect);
@@ -208,6 +216,22 @@ public class Frame extends JFrame {
 	public void setTglbtnSelect(JToggleButton tglbtnSelect) {
 		this.tglbtnSelect = tglbtnSelect;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JToggleButton getTglbtnLine() {
+		return tglbtnLine;
+	}
+
+	/**
+	 * 
+	 * @param tglbtnLine
+	 */
+	public void setTglbtnLine(JToggleButton tglbtnLine) {
+		this.tglbtnLine = tglbtnLine;
+	}
 
 	/**
 	 * 
@@ -255,6 +279,22 @@ public class Frame extends JFrame {
 	 */
 	public void setBtnSave(JButton btnSave) {
 		this.btnSave = btnSave;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public JButton getBtnOpen() {
+		return btnOpen;
+	}
+
+	/**
+	 * 
+	 * @param btnOpen
+	 */
+	public void setBtnOpen(JButton btnOpen) {
+		this.btnOpen = btnOpen;
 	}
 
 	/**

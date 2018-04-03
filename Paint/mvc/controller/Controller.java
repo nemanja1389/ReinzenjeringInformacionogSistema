@@ -6,17 +6,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import geometry.Line;
 import geometry.Point;
 import geometry.Shape;
 import model.Model;
@@ -38,6 +44,8 @@ public class Controller {
 	private Frame frame;
 	private Color lineColor = Color.BLACK;
 	private Color areaColor = Color.WHITE;
+	int mouseDragged = 0;
+	Point startPoint;
 	
 	/**
 	 * 
@@ -174,6 +182,27 @@ public class Controller {
 			public void mouseExited(MouseEvent e) {
 				getFrame().getCoordText().setText("");
 			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if(getFrame().getTglbtnLine().isSelected()){
+					startPoint = new Point(e.getX(), e.getY(), lineColor);
+				}
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if(getFrame().getTglbtnLine().isSelected()){
+					model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
+					getFrame().getLogTextArea().append("Add: "+ new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor).toString() + '\n');
+				}
+			}
 		});
 		
 		getView().addMouseMotionListener(new MouseAdapter() {
@@ -184,6 +213,22 @@ public class Controller {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				getFrame().getCoordText().setText("X: " + e.getX() + "   Y: " + e.getY());
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if(getFrame().getTglbtnLine().isSelected()){
+					if(mouseDragged == 0){
+						model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
+						mouseDragged = 1;
+					} else {
+						model.getShapeList().remove(model.getShapeList().size()-1);
+						model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
+					}
+				}
 			}
 		});
 		
@@ -225,7 +270,9 @@ public class Controller {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
 				File selectedFile = null;
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Log aplikacije", "log");
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
+				fileChooser.setFileFilter(filter);
 				
 				int result = fileChooser.showSaveDialog(getFrame().getPaintPnl());
 				if (result == JFileChooser.APPROVE_OPTION) {
@@ -252,6 +299,19 @@ public class Controller {
 						ee.printStackTrace();
 					}
 				}
+			}
+		});
+		
+		getFrame().getBtnOpen().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("log", "log");
+				fileChooser.setFileFilter(filter);
+				File selectedFile = null;
+				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+				int result = fileChooser.showOpenDialog(getFrame().getPaintPnl());
 			}
 		});
 	}
