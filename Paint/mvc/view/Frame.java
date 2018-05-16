@@ -328,7 +328,4 @@ public class Frame extends JFrame {
 	public void setLogTextArea(JTextArea logTextArea) {
 		this.logTextArea = logTextArea;
 	}
-	
-	
-
 }

@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="mvc"/>
 	<classpathentry kind="src" path="startApp"/>
+	<classpathentry kind="src" path="command"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

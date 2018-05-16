@@ -1,11 +1,19 @@
 package controller;
 
+import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.List;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,14 +22,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import command.AddPoint;
+import command.Command;
 import geometry.Line;
 import geometry.Point;
 import geometry.Shape;
@@ -44,8 +58,31 @@ public class Controller {
 	private Frame frame;
 	private Color lineColor = Color.BLACK;
 	private Color areaColor = Color.WHITE;
-	int mouseDragged = 0;
-	Point startPoint;
+	private int mouseDragged = 0;
+	private Point startPoint;
+	
+	
+	private LinkedList<Command> commandList = new LinkedList<Command>();
+	private int commandListIndex = -1;
+	private LinkedList<String> commandsLog = new LinkedList<String>();
+	private int commandsLogIndex = 0;
+	private String commandsLogString;
+	private String[] commandsLogStringParts;
+	private String[] commandsLogStringPartsInner;
+	private String[] commandsLogStringPartsInnerParams;
+	
+	private LinkedList<String> stringList = new LinkedList<String>();
+	private int stringListIndex = 0;
+	private String stringListLine;
+	private String stringListArray[];
+	private String stringListCmd[];
+	private String stringListShape[];
+	private String stringListX[];
+	private String stringListY[];
+	private String stringListRed[];
+	private String stringListGreen[];
+	private String stringListBlue[];
+	
 	
 	/**
 	 * 
@@ -147,14 +184,15 @@ public class Controller {
 		getView().addMouseListener(new MouseAdapter() {
 			
 			/**
-			 * 
+			 * Crtanje tacke
 			 */
 			@Override
 			public void mouseClicked(MouseEvent e){
 				if(frame.getTglbtnPoint().isSelected()){
-					model.getShapeList().add(new Point(e.getX(), e.getY(), lineColor));
+					AddPoint addPoint = new AddPoint(model,new Point(e.getX(), e.getY(), lineColor));
+					doCommand(addPoint);
 					getFrame().getLogTextArea().append("Add: "+ new Point(e.getX(), e.getY(), lineColor).toString() + '\n');
-					
+					getView().repaint();
 				} else if(frame.getTglbtnSelect().isSelected()){
 					
 					Iterator it = model.getShapeList().iterator();
@@ -259,7 +297,7 @@ public class Controller {
 				lineColor = JColorChooser.showDialog(null, "Izaberi boju", lineColor);
 				if(lineColor != null){
 					lineColor = lineColor;
-					frame.getBtnLineColor().setBackground(lineColor);
+					getFrame().getBtnLineColor().setBackground(lineColor);
 				}
 			}
 		});
@@ -312,7 +350,118 @@ public class Controller {
 				File selectedFile = null;
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int result = fileChooser.showOpenDialog(getFrame().getPaintPnl());
+				
+				selectedFile = fileChooser.getSelectedFile();
+				BufferedReader br = null;
+				try {
+					br = new BufferedReader(new FileReader(selectedFile));
+				} 
+				catch (FileNotFoundException ee) {
+						ee.printStackTrace();
+				}
+				String line;
+				try {
+					while ((line = br.readLine()) != null) {
+						stringList.add(line);
+					}
+				} 
+				catch (IOException ee) {
+					
+						ee.printStackTrace();
+				}
+				try {
+					br.close();
+				} 
+				catch (IOException ee) {
+						// TODO Auto-generated catch block
+						ee.printStackTrace();
+					
+				}
+				for (int i = 0; i < stringList.size(); i++) {
+					stringListLine = stringList.get(i);
+					System.out.println(i + ". " + stringListLine);
+					stringListArray = stringListLine.split(" ");
+					stringListCmd = stringListArray[0].split(":");
+					stringListShape = stringListArray[1].split(":");
+					if (stringListCmd[0].equals("Add")){
+						if (stringListShape[0].equals("Point")) {
+							stringListX = stringListArray[3].split(",");
+							stringListY = stringListArray[5].split(";");
+							stringListRed = stringListArray[8].split(",");
+							stringListGreen = stringListArray[10].split(",");
+							stringListBlue = stringListArray[12].split(";");
+		 					System.out.println(i + ". " + stringListCmd[0]);
+							System.out.println(i + ". " + stringListShape[0]);
+							System.out.println(i + ". " + stringListX[0]);
+							System.out.println(i + ". " + stringListY[0]);
+							System.out.println(i + ". " + stringListRed[0]);
+							System.out.println(i + ". " + stringListGreen[0]);
+							System.out.println(i + ". " + stringListBlue[0]);
+							int x = Integer.parseInt(stringListX[0]);
+							int y = Integer.parseInt(stringListY[0]);
+							int r = Integer.parseInt(stringListRed[0]);
+							int g = Integer.parseInt(stringListGreen[0]);
+							int b = Integer.parseInt(stringListBlue[0]);
+							AddPoint addPoint = new AddPoint(model, new Point(x, y, new Color(r, g, b)));
+							doCommand(addPoint);
+							getFrame().getLogTextArea().append(stringListLine  + '\n');
+						}
+					}
+					
+				}
+				getView().repaint();
 			}
 		});
+	}
+	
+	
+	/**
+	 * Izvrsavanje komandi
+	 * @param c - prosledjena komanda
+	 */
+	public void doCommand(Command c) {
+		if (commandListIndex + 1 < (commandList.size())) {
+			System.out.println("true");
+			int cc = commandList.size();
+			for (int i = cc - 1; i > commandListIndex; i--) {
+				commandList.remove(i);
+			}
+			c.execute();
+			commandList.add(c);
+		} 
+		else {
+			System.out.println("false");
+			c.execute();
+			commandList.add(c);
+		}
+		commandListIndex++;
+		view.repaint();
+	}
+	
+	public void recreate(){
+		if (commandsLogIndex < commandsLog.size()) {
+			commandsLogString = commandsLog.get(commandsLogIndex);
+			commandsLogStringParts = commandsLogString.split(": ");
+			if (commandsLogStringParts[0].equals("Add")){
+				commandsLogStringPartsInner = commandsLogStringParts[1].split(":");
+				if (commandsLogStringPartsInner[0].equals("Point")) {
+					commandsLogStringPartsInnerParams = commandsLogStringPartsInner[1].split(",");
+					System.out.println(commandListIndex + ", " + commandsLogString + ", " );
+					/*AddPoint addPoint = new AddPoint(model,*/
+					/*Point t = new Point(commandsLogStringPartsInnerParams[0], commandsLogStringPartsInnerParams[1], Color.decode(commandsLogStringPartsInnerParams[2]));
+					CmdAddPoint c2 = new CmdAddPoint(model, t);
+					doCmd(c2);*/
+				}/* 
+				else if (commandsLogStringPartsInner[0].equals("Line")){
+					String commandsLogStringPartsInnerParamsLine[];
+					commandsLogStringPartsInnerParamsLine = commandsLogStringPartsInner[1].split(",");
+					Point start = new Point(commandsLogStringPartsInnerParamsLine[0], commandsLogStringPartsInnerParamsLine[1], Color.black);
+					Point end = new Point(commandsLogStringPartsInnerParamsLine[2], commandsLogStringPartsInnerParamsLine[3], Color.black);
+					Line l = new Line(start, end, Color.decode(commandsLogStringPartsInnerParamsLine[4]));
+					CmdAddLine c3 = new CmdAddLine(model, l);
+					doCmd(c3);
+				}*/ 
+			}
+		}
 	}
 }
