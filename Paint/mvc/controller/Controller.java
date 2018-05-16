@@ -412,6 +412,32 @@ public class Controller {
 				getView().repaint();
 			}
 		});
+		
+		getFrame().getBtnUndo().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (commandListIndex > -1) {
+					commandList.get(commandListIndex).unexecute();
+					getFrame().getLogTextArea().append("Undo command" + '\n');
+					commandListIndex--;
+				} 		
+				getView().repaint();
+			}
+		});
+		
+		getFrame().getBtnRedo().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (commandListIndex +1 < (commandList.size())) {
+					commandList.get(commandListIndex+1).execute();
+					commandListIndex++;
+					getFrame().getLogTextArea().append("Redo command" + '\n');
+					getView().repaint();
+				}
+			}
+		});
 	}
 	
 	

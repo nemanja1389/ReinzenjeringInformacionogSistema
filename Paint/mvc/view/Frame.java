@@ -46,6 +46,8 @@ public class Frame extends JFrame {
 	private JPanel paintTab;
 	private JPanel logPnl;
 	private JTextArea logTextArea;
+	private JButton btnUndo;
+	private JButton btnRedo;
 		
 	/**
 	 * Launch the application.
@@ -100,6 +102,12 @@ public class Frame extends JFrame {
 		
 		btnSave = new JButton("Save");
 		toolPnl.add(btnSave);
+		
+		btnUndo = new JButton("Undo");
+		toolPnl.add(btnUndo);
+		
+		btnRedo = new JButton("Redo");
+		toolPnl.add(btnRedo);
 		
 		tglbtnPoint = new JToggleButton("Point");
 		buttonGroup.add(tglbtnPoint);
@@ -328,4 +336,23 @@ public class Frame extends JFrame {
 	public void setLogTextArea(JTextArea logTextArea) {
 		this.logTextArea = logTextArea;
 	}
+
+	public JButton getBtnUndo() {
+		return btnUndo;
+	}
+
+	public void setBtnUndo(JButton btnUndo) {
+		this.btnUndo = btnUndo;
+	}
+
+	public JButton getBtnRedo() {
+		return btnRedo;
+	}
+
+	public void setBtnRedo(JButton btnRedo) {
+		this.btnRedo = btnRedo;
+	}
+	
+	
+	
 }
