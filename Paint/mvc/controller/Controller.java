@@ -36,8 +36,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.omg.CosNaming.IstringHelper;
 
+import command.AddLine;
 import command.AddPoint;
 import command.Command;
+import command.DeleteLine;
 import command.DeletePoint;
 import command.ModifyPoint;
 import dialog.PointDlg;
@@ -64,6 +66,7 @@ public class Controller {
 	private Color lineColor = Color.BLACK;
 	private Color areaColor = Color.WHITE;
 	private int mouseDragged = 0;
+	private int mousePressed = 0;
 	private Point startPoint;
 	
 	
@@ -232,20 +235,31 @@ public class Controller {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if(getFrame().getTglbtnLine().isSelected()){
-					startPoint = new Point(e.getX(), e.getY(), lineColor);
+					if(mousePressed == 0) {
+						startPoint = new Point(e.getX(), e.getY(), lineColor);
+						mousePressed = 1;
+					}else {
+						//model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
+						AddLine addLine = new AddLine(model, new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
+						doCommand(addLine);
+						getFrame().getLogTextArea().append("Add: "+ new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor).toString() + '\n');
+						mousePressed = 0;
+						getView().repaint();
+					}
+					
 				}
 			}
 			
 			/**
 			 * 
 			 */
-			@Override
+			/*@Override
 			public void mouseReleased(MouseEvent e) {
 				if(getFrame().getTglbtnLine().isSelected()){
 					model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
 					getFrame().getLogTextArea().append("Add: "+ new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor).toString() + '\n');
 				}
-			}
+			}*/
 		});
 		
 		getView().addMouseMotionListener(new MouseAdapter() {
@@ -261,7 +275,7 @@ public class Controller {
 			/**
 			 * 
 			 */
-			@Override
+			/*@Override
 			public void mouseDragged(MouseEvent e) {
 				if(getFrame().getTglbtnLine().isSelected()){
 					if(mouseDragged == 0){
@@ -272,7 +286,7 @@ public class Controller {
 						model.getShapeList().add(new Line(startPoint, new Point(e.getX(), e.getY(), lineColor), lineColor));
 					}
 				}
-			}
+			}*/
 		});
 		
 		getFrame().getBtnDelete().addActionListener(new ActionListener() {
@@ -293,6 +307,15 @@ public class Controller {
 								it.remove();
 								DeletePoint deletePoint = new DeletePoint(model, (Point) s);
 								doCommand(deletePoint);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
+						}else if(s instanceof Line) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete liniju?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result) 
+							{
+								it.remove();
+								DeleteLine deleteLine = new DeleteLine(model, (Line) s);
+								doCommand(deleteLine);
 								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
 							}
 						}
