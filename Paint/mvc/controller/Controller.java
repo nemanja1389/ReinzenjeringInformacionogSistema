@@ -34,8 +34,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.omg.CosNaming.IstringHelper;
+
 import command.AddPoint;
 import command.Command;
+import command.DeletePoint;
+import command.ModifyPoint;
+import dialog.PointDlg;
 import geometry.Line;
 import geometry.Point;
 import geometry.Shape;
@@ -281,7 +286,16 @@ public class Controller {
 				while (it.hasNext()){
 					Shape s = (Shape)it.next();
 					if(s.isSelected()){					
-						it.remove();
+						if(s instanceof Point) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete tacku?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result)
+							{	
+								it.remove();
+								DeletePoint deletePoint = new DeletePoint(model, (Point) s);
+								doCommand(deletePoint);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
+						}
 					}
 				}
 			}
@@ -406,6 +420,8 @@ public class Controller {
 							doCommand(addPoint);
 							getFrame().getLogTextArea().append(stringListLine  + '\n');
 						}
+					}else if(stringListCmd[0].equals("Deleted")){
+						
 					}
 					
 				}
@@ -435,6 +451,29 @@ public class Controller {
 					commandListIndex++;
 					getFrame().getLogTextArea().append("Redo command" + '\n');
 					getView().repaint();
+				}
+			}
+		});
+		
+		getFrame().getBtnModify().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Iterator it = model.getShapeList().iterator();
+				while (it.hasNext()){
+					Shape s = (Shape)it.next();
+					if(s.isSelected()){					
+						if(s instanceof Point) {
+							Point p = (Point) s;
+							PointDlg dialog = new PointDlg(p.getLineColor(), p.getX(), p.getY());
+							dialog.setVisible(true);
+							dialog.setLocationRelativeTo(getFrame());
+							
+							ModifyPoint modifiyPoint = new ModifyPoint(p, new Point(dialog.getX(),dialog.getY(),dialog.getPointColor()));
+							doCommand(modifiyPoint);
+							getFrame().getLogTextArea().append("Modified: "+ modifiyPoint.toString() + '\n');
+						}
+					}
 				}
 			}
 		});

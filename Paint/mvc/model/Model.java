@@ -15,6 +15,7 @@ public class Model {
 	 * 
 	 */
 	private ArrayList<Shape> shapeList = new ArrayList<Shape>();
+	private ArrayList<Shape> selectShapeList = new ArrayList<Shape>();
 
 	/**
 	 * 
