@@ -39,19 +39,23 @@ import org.omg.CosNaming.IstringHelper;
 import command.AddCircle;
 import command.AddLine;
 import command.AddPoint;
+import command.AddRectangle;
 import command.AddSquare;
 import command.Command;
 import command.DeleteCircle;
 import command.DeleteLine;
 import command.DeletePoint;
+import command.DeleteRectangle;
 import command.DeleteSquare;
 import command.ModifyPoint;
 import dialog.CircleDlg;
 import dialog.PointDlg;
+import dialog.RectanglDlg;
 import dialog.SquareDlg;
 import geometry.Circle;
 import geometry.Line;
 import geometry.Point;
+import geometry.Rectangle;
 import geometry.Shape;
 import geometry.Square;
 import model.Model;
@@ -245,6 +249,16 @@ public class Controller {
 					AddSquare addSquare = new AddSquare(model, new Square(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()));
 					doCommand(addSquare);
 					getFrame().getLogTextArea().append("Add: "+ new Square(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()).toString() + '\n');
+				}else if(getFrame().getTglbtnRectangle().isSelected()) {
+					RectanglDlg dialog = new RectanglDlg(e.getX(), e.getY(), lineColor, areaColor);
+					
+					dialog.setModal(true);
+					dialog.setLocationRelativeTo(getFrame());
+					dialog.setVisible(true);
+					
+					AddRectangle addRectangle = new AddRectangle(model, new Rectangle(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getReheight(), dialog.getLine(), dialog.getArea()));
+					doCommand(addRectangle);
+					getFrame().getLogTextArea().append("Add: "+ new Rectangle(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getReheight(), dialog.getLine(), dialog.getArea()).toString() + '\n');
 				}
 			}
 			
@@ -361,6 +375,15 @@ public class Controller {
 								it.remove();
 								DeleteSquare deleteSquare = new DeleteSquare(model, (Square) s);
 								doCommand(deleteSquare);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
+						}else if(s instanceof Rectangle) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete pravougaonik?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result) 
+							{
+								it.remove();
+								DeleteRectangle deleteRectangle = new DeleteRectangle(model, (Rectangle) s);
+								doCommand(deleteRectangle);
 								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
 							}
 						}

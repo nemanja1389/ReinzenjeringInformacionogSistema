@@ -1,23 +1,23 @@
 package dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.border.TitledBorder;
 
-public class SquareDlg extends JDialog {
+public class RectanglDlg extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtWidth;
@@ -28,13 +28,15 @@ public class SquareDlg extends JDialog {
 	private int x;
 	private int y;
 	private int sqwidth;
+	private int reheight;
 	private Color line;
 	private Color area;
+	private JTextField txtHeight;
 
 	/**
 	 * Create the dialog.
 	 */
-	public SquareDlg(int x, int y, Color line, Color area) {
+	public RectanglDlg(int x, int y, Color line, Color area) {
 		this.x = x;
 		this.y = y;
 		this.line = line;
@@ -134,6 +136,17 @@ public class SquareDlg extends JDialog {
 			txtWidth.setColumns(10);
 		}
 		{
+			JLabel lblHeight = new JLabel("Height:");
+			lblHeight.setBounds(10, 143, 46, 14);
+			contentPanel.add(lblHeight);
+		}
+		{
+			txtHeight = new JTextField();
+			txtHeight.setBounds(66, 140, 86, 20);
+			contentPanel.add(txtHeight);
+			txtHeight.setColumns(10);
+		}
+		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -166,15 +179,27 @@ public class SquareDlg extends JDialog {
 						}
 						
 						if(txtWidth.getText().length() < 1){
-							JOptionPane.showMessageDialog(null, "Unesite stranicu.", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Unesite stranicu a.", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						else
 							try{
 								Double.parseDouble(txtWidth.getText());
 							}
 						catch(NumberFormatException e1){
-							JOptionPane.showMessageDialog(null, "Stranica mora biti broj!", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Stranica a mora biti broj!", "Error", JOptionPane.ERROR_MESSAGE);
 						}
+						
+						if(txtHeight.getText().length() < 1){
+							JOptionPane.showMessageDialog(null, "Unesite stranicu b.", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						else
+							try{
+								Double.parseDouble(txtHeight.getText());
+							}
+						catch(NumberFormatException e1){
+							JOptionPane.showMessageDialog(null, "Stranica b mora biti broj!", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						
 						try {
 							Integer.parseInt(txtCoorX.getText());
 							setX(Integer.parseInt(txtCoorX.getText()));
@@ -182,6 +207,8 @@ public class SquareDlg extends JDialog {
 							setY(Integer.parseInt(txtCoorY.getText()));
 							Integer.parseInt(txtWidth.getText());
 							setSqwidth(Integer.parseInt(txtWidth.getText()));
+							Integer.parseInt(txtHeight.getText());
+							setReheight(Integer.parseInt(txtHeight.getText()));
 						}
 						catch (Exception e2) {
 							// TODO: handle exception
@@ -191,7 +218,9 @@ public class SquareDlg extends JDialog {
 						}else if(getY() < 0) {
 							JOptionPane.showMessageDialog(null, "Y koordinata mora biti veca od 0!", "Error", JOptionPane.ERROR_MESSAGE);
 						}else if(getSqwidth() < 0){
-							JOptionPane.showMessageDialog(null, "Stranica mora biti veca od 0!", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Stranica a mora biti veca od 0!", "Error", JOptionPane.ERROR_MESSAGE);
+						}else if(getReheight() < 0){
+							JOptionPane.showMessageDialog(null, "Stranica b mora biti veca od 0!", "Error", JOptionPane.ERROR_MESSAGE);
 						}else {
 							try {
 								Integer.parseInt(txtCoorX.getText());
@@ -214,6 +243,11 @@ public class SquareDlg extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
@@ -275,5 +309,14 @@ public class SquareDlg extends JDialog {
 	public void setSqwidth(int sqwidth) {
 		this.sqwidth = sqwidth;
 	}
+
+	public int getReheight() {
+		return reheight;
+	}
+
+	public void setReheight(int reheight) {
+		this.reheight = reheight;
+	}
+	
 	
 }
