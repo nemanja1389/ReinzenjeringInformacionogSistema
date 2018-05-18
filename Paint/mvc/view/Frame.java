@@ -29,6 +29,7 @@ public class Frame extends JFrame {
 	 * 
 	 */
 	private Color lineColor = Color.BLACK;
+	private Color areaColor = Color.WHITE;
 	private JPanel contentPane;
 	private View paintPnl;
 	private JPanel toolPnl;
@@ -49,6 +50,8 @@ public class Frame extends JFrame {
 	private JButton btnUndo;
 	private JButton btnRedo;
 	private JButton btnModify;
+	private JToggleButton tglbtnCircle;
+	private JButton btnAreaColor;
 		
 	/**
 	 * Launch the application.
@@ -121,6 +124,10 @@ public class Frame extends JFrame {
 		buttonGroup.add(tglbtnLine);
 		toolPnl.add(tglbtnLine);
 		
+		tglbtnCircle = new JToggleButton("Circle");
+		buttonGroup.add(tglbtnCircle);
+		toolPnl.add(tglbtnCircle);
+		
 		tglbtnSelect = new JToggleButton("Select");
 		buttonGroup.add(tglbtnSelect);
 		toolPnl.add(tglbtnSelect);
@@ -132,6 +139,11 @@ public class Frame extends JFrame {
 		btnLineColor.setBackground(lineColor);
 		btnLineColor.setForeground(Color.WHITE);
 		toolPnl.add(btnLineColor);
+		
+		btnAreaColor = new JButton("Area Color");
+		btnAreaColor.setBackground(areaColor);
+		btnAreaColor.setForeground(Color.BLACK);
+		toolPnl.add(btnAreaColor);
 		
 		coordPnl = new JPanel();
 		paintTab.add(coordPnl, BorderLayout.SOUTH);
@@ -364,7 +376,30 @@ public class Frame extends JFrame {
 	public void setBtnModify(JButton btnModify) {
 		this.btnModify = btnModify;
 	}
-	
+
+	public JToggleButton getTglbtnCircle() {
+		return tglbtnCircle;
+	}
+
+	public void setTglbtnCircle(JToggleButton tglbtnCircle) {
+		this.tglbtnCircle = tglbtnCircle;
+	}
+
+	public Color getAreaColor() {
+		return areaColor;
+	}
+
+	public void setAreaColor(Color areaColor) {
+		this.areaColor = areaColor;
+	}
+
+	public JButton getBtnAreaColor() {
+		return btnAreaColor;
+	}
+
+	public void setBtnAreaColor(JButton btnAreaColor) {
+		this.btnAreaColor = btnAreaColor;
+	}
 	
 	
 }

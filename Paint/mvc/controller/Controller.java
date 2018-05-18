@@ -36,13 +36,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.omg.CosNaming.IstringHelper;
 
+import command.AddCircle;
 import command.AddLine;
 import command.AddPoint;
 import command.Command;
+import command.DeleteCircle;
 import command.DeleteLine;
 import command.DeletePoint;
 import command.ModifyPoint;
+import dialog.CircleDlg;
 import dialog.PointDlg;
+import geometry.Circle;
 import geometry.Line;
 import geometry.Point;
 import geometry.Shape;
@@ -217,6 +221,16 @@ public class Controller {
 					if(s1 != null){
 						s1.setSelected(true);
 					}
+				}else if(getFrame().getTglbtnCircle().isSelected()) {
+					CircleDlg dialog = new CircleDlg(e.getX(), e.getY(), lineColor, areaColor);
+					
+					dialog.setModal(true);
+					dialog.setLocationRelativeTo(getFrame());
+					dialog.setVisible(true);
+					
+					AddCircle addCircle = new AddCircle(model, new Circle(new Point(e.getX(), e.getY()), dialog.getRadius(), dialog.getLine(), dialog.getArea()));
+					doCommand(addCircle);
+					getFrame().getLogTextArea().append("Add: "+new Circle(new Point(e.getX(), e.getY()), dialog.getRadius(), dialog.getLine(), dialog.getArea()).toString() + '\n');
 				}
 			
 			}
@@ -318,6 +332,15 @@ public class Controller {
 								doCommand(deleteLine);
 								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
 							}
+						}else if(s instanceof Circle) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete krug?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result) 
+							{
+								it.remove();
+								DeleteCircle deleteCircle = new DeleteCircle(model, (Circle) s);
+								doCommand(deleteCircle);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
 						}
 					}
 				}
@@ -335,6 +358,18 @@ public class Controller {
 				if(lineColor != null){
 					lineColor = lineColor;
 					getFrame().getBtnLineColor().setBackground(lineColor);
+				}
+			}
+		});
+		
+		getFrame().getBtnAreaColor().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				areaColor = JColorChooser.showDialog(null, "Izaberi boju", areaColor);
+				if(areaColor != null){
+					areaColor = areaColor;
+					getFrame().getBtnAreaColor().setBackground(areaColor);
 				}
 			}
 		});
