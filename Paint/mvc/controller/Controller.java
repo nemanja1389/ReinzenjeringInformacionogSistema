@@ -39,17 +39,21 @@ import org.omg.CosNaming.IstringHelper;
 import command.AddCircle;
 import command.AddLine;
 import command.AddPoint;
+import command.AddSquare;
 import command.Command;
 import command.DeleteCircle;
 import command.DeleteLine;
 import command.DeletePoint;
+import command.DeleteSquare;
 import command.ModifyPoint;
 import dialog.CircleDlg;
 import dialog.PointDlg;
+import dialog.SquareDlg;
 import geometry.Circle;
 import geometry.Line;
 import geometry.Point;
 import geometry.Shape;
+import geometry.Square;
 import model.Model;
 import view.Frame;
 import view.View;
@@ -230,9 +234,18 @@ public class Controller {
 					
 					AddCircle addCircle = new AddCircle(model, new Circle(new Point(e.getX(), e.getY()), dialog.getRadius(), dialog.getLine(), dialog.getArea()));
 					doCommand(addCircle);
-					getFrame().getLogTextArea().append("Add: "+new Circle(new Point(e.getX(), e.getY()), dialog.getRadius(), dialog.getLine(), dialog.getArea()).toString() + '\n');
+					getFrame().getLogTextArea().append("Add: "+ new Circle(new Point(e.getX(), e.getY()), dialog.getRadius(), dialog.getLine(), dialog.getArea()).toString() + '\n');
+				} else if(getFrame().getTglbtnSquare().isSelected()) {
+					SquareDlg dialog = new SquareDlg(e.getX(), e.getY(), lineColor, areaColor);
+					
+					dialog.setModal(true);
+					dialog.setLocationRelativeTo(getFrame());
+					dialog.setVisible(true);
+					
+					AddSquare addSquare = new AddSquare(model, new Square(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()));
+					doCommand(addSquare);
+					getFrame().getLogTextArea().append("Add: "+ new Square(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()).toString() + '\n');
 				}
-			
 			}
 			
 			/**
@@ -339,6 +352,15 @@ public class Controller {
 								it.remove();
 								DeleteCircle deleteCircle = new DeleteCircle(model, (Circle) s);
 								doCommand(deleteCircle);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
+						}else if(s instanceof Square) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete kvadrat?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result) 
+							{
+								it.remove();
+								DeleteSquare deleteSquare = new DeleteSquare(model, (Square) s);
+								doCommand(deleteSquare);
 								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
 							}
 						}

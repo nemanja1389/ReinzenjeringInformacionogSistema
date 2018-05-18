@@ -52,6 +52,7 @@ public class Frame extends JFrame {
 	private JButton btnModify;
 	private JToggleButton tglbtnCircle;
 	private JButton btnAreaColor;
+	private JToggleButton tglbtnSquare;
 		
 	/**
 	 * Launch the application.
@@ -127,6 +128,10 @@ public class Frame extends JFrame {
 		tglbtnCircle = new JToggleButton("Circle");
 		buttonGroup.add(tglbtnCircle);
 		toolPnl.add(tglbtnCircle);
+		
+		tglbtnSquare = new JToggleButton("Square");
+		buttonGroup.add(tglbtnSquare);
+		toolPnl.add(tglbtnSquare);
 		
 		tglbtnSelect = new JToggleButton("Select");
 		buttonGroup.add(tglbtnSelect);
@@ -399,6 +404,14 @@ public class Frame extends JFrame {
 
 	public void setBtnAreaColor(JButton btnAreaColor) {
 		this.btnAreaColor = btnAreaColor;
+	}
+
+	public JToggleButton getTglbtnSquare() {
+		return tglbtnSquare;
+	}
+
+	public void setTglbtnSquare(JToggleButton tglbtnSquare) {
+		this.tglbtnSquare = tglbtnSquare;
 	}
 	
 	
