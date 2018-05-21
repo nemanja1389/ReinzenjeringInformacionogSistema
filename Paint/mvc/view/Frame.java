@@ -54,6 +54,7 @@ public class Frame extends JFrame {
 	private JButton btnAreaColor;
 	private JToggleButton tglbtnSquare;
 	private JToggleButton tglbtnRectangle;
+	private JToggleButton tglbtnHexagon;
 		
 	/**
 	 * Launch the application.
@@ -137,6 +138,10 @@ public class Frame extends JFrame {
 		tglbtnRectangle = new JToggleButton("Rectangle");
 		buttonGroup.add(tglbtnRectangle);
 		toolPnl.add(tglbtnRectangle);
+		
+		tglbtnHexagon = new JToggleButton("Hexagon");
+		buttonGroup.add(tglbtnHexagon);
+		toolPnl.add(tglbtnHexagon);
 		
 		tglbtnSelect = new JToggleButton("Select");
 		buttonGroup.add(tglbtnSelect);
@@ -425,6 +430,14 @@ public class Frame extends JFrame {
 
 	public void setTglbtnRectangle(JToggleButton tglbtnRectangle) {
 		this.tglbtnRectangle = tglbtnRectangle;
+	}
+
+	public JToggleButton getTglbtnHexagon() {
+		return tglbtnHexagon;
+	}
+
+	public void setTglbtnHexagon(JToggleButton tglbtnHexagon) {
+		this.tglbtnHexagon = tglbtnHexagon;
 	}
 	
 	

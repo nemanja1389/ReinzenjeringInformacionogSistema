@@ -37,22 +37,26 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.omg.CosNaming.IstringHelper;
 
 import command.AddCircle;
+import command.AddHexagon;
 import command.AddLine;
 import command.AddPoint;
 import command.AddRectangle;
 import command.AddSquare;
 import command.Command;
 import command.DeleteCircle;
+import command.DeleteHexagon;
 import command.DeleteLine;
 import command.DeletePoint;
 import command.DeleteRectangle;
 import command.DeleteSquare;
 import command.ModifyPoint;
 import dialog.CircleDlg;
+import dialog.HexagonDlg;
 import dialog.PointDlg;
 import dialog.RectanglDlg;
 import dialog.SquareDlg;
 import geometry.Circle;
+import geometry.HexagonAdapter;
 import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
@@ -84,24 +88,11 @@ public class Controller {
 	
 	private LinkedList<Command> commandList = new LinkedList<Command>();
 	private int commandListIndex = -1;
-	private LinkedList<String> commandsLog = new LinkedList<String>();
-	private int commandsLogIndex = 0;
-	private String commandsLogString;
-	private String[] commandsLogStringParts;
-	private String[] commandsLogStringPartsInner;
-	private String[] commandsLogStringPartsInnerParams;
 	
-	private LinkedList<String> stringList = new LinkedList<String>();
-	private int stringListIndex = 0;
 	private String stringListLine;
 	private String stringListArray[];
 	private String stringListCmd[];
 	private String stringListShape[];
-	private String stringListX[];
-	private String stringListY[];
-	private String stringListRed[];
-	private String stringListGreen[];
-	private String stringListBlue[];
 	
 	
 	/**
@@ -259,6 +250,16 @@ public class Controller {
 					AddRectangle addRectangle = new AddRectangle(model, new Rectangle(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getReheight(), dialog.getLine(), dialog.getArea()));
 					doCommand(addRectangle);
 					getFrame().getLogTextArea().append("Add: "+ new Rectangle(new Point(e.getX(), e.getY()), dialog.getSqwidth(), dialog.getReheight(), dialog.getLine(), dialog.getArea()).toString() + '\n');
+				}else if(getFrame().getTglbtnHexagon().isSelected()) {
+					HexagonDlg dialog = new HexagonDlg(e.getX(), e.getY(), lineColor, areaColor);
+					
+					dialog.setModal(true);
+					dialog.setLocationRelativeTo(getFrame());
+					dialog.setVisible(true);
+					
+					AddHexagon addHexagon = new AddHexagon(model, new HexagonAdapter(e.getX(), e.getY(), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()));
+					doCommand(addHexagon);
+					getFrame().getLogTextArea().append("Add: "+ new HexagonAdapter(e.getX(), e.getY(), dialog.getSqwidth(), dialog.getLine(), dialog.getArea()).toString() + '\n');
 				}
 			}
 			
@@ -386,6 +387,15 @@ public class Controller {
 								doCommand(deleteRectangle);
 								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
 							}
+						}else if(s instanceof HexagonAdapter) {
+							int result = JOptionPane.showConfirmDialog(null, "Da li ste sigurni da zelite da obrisete pravougaonik?", "Warning!", JOptionPane.WARNING_MESSAGE);
+							if(JOptionPane.OK_OPTION == result) 
+							{
+								it.remove();
+								DeleteHexagon deleteHexagon = new DeleteHexagon(model, (HexagonAdapter) s);
+								doCommand(deleteHexagon);
+								getFrame().getLogTextArea().append("Deleted: "+ s.toString() + '\n');
+							}
 						}
 					}
 				}
@@ -469,66 +479,38 @@ public class Controller {
 				int result = fileChooser.showOpenDialog(getFrame().getPaintPnl());
 				
 				selectedFile = fileChooser.getSelectedFile();
-				BufferedReader br = null;
-				try {
-					br = new BufferedReader(new FileReader(selectedFile));
-				} 
-				catch (FileNotFoundException ee) {
-						ee.printStackTrace();
-				}
-				String line;
-				try {
-					while ((line = br.readLine()) != null) {
-						stringList.add(line);
-					}
-				} 
-				catch (IOException ee) {
-					
-						ee.printStackTrace();
-				}
-				try {
-					br.close();
-				} 
-				catch (IOException ee) {
-						// TODO Auto-generated catch block
-						ee.printStackTrace();
-					
-				}
-				for (int i = 0; i < stringList.size(); i++) {
-					stringListLine = stringList.get(i);
-					System.out.println(i + ". " + stringListLine);
-					stringListArray = stringListLine.split(" ");
-					stringListCmd = stringListArray[0].split(":");
-					stringListShape = stringListArray[1].split(":");
-					if (stringListCmd[0].equals("Add")){
-						if (stringListShape[0].equals("Point")) {
-							stringListX = stringListArray[3].split(",");
-							stringListY = stringListArray[5].split(";");
-							stringListRed = stringListArray[8].split(",");
-							stringListGreen = stringListArray[10].split(",");
-							stringListBlue = stringListArray[12].split(";");
-		 					System.out.println(i + ". " + stringListCmd[0]);
-							System.out.println(i + ". " + stringListShape[0]);
-							System.out.println(i + ". " + stringListX[0]);
-							System.out.println(i + ". " + stringListY[0]);
-							System.out.println(i + ". " + stringListRed[0]);
-							System.out.println(i + ". " + stringListGreen[0]);
-							System.out.println(i + ". " + stringListBlue[0]);
-							int x = Integer.parseInt(stringListX[0]);
-							int y = Integer.parseInt(stringListY[0]);
-							int r = Integer.parseInt(stringListRed[0]);
-							int g = Integer.parseInt(stringListGreen[0]);
-							int b = Integer.parseInt(stringListBlue[0]);
-							AddPoint addPoint = new AddPoint(model, new Point(x, y, new Color(r, g, b)));
-							doCommand(addPoint);
-							getFrame().getLogTextArea().append(stringListLine  + '\n');
+				if(selectedFile == null) {
+					System.out.println("Nije izabran fajl");
+				} else {
+					LinkedList<String> stringLog = getStringLine(selectedFile);
+  					for (int i = 0; i < stringLog.size(); i++) {
+						stringListLine = stringLog.get(i);
+						System.out.println(i + ". " + stringListLine);
+						stringListArray = stringListLine.split(" ");
+						stringListCmd = stringListArray[0].split(":");
+						stringListShape = stringListArray[1].split(":"); 
+						if (stringListCmd[0].equals("Add")){
+							if (stringListShape[0].equals("Point")) {
+								drawPoint(stringListArray);
+							}else if(stringListShape[0].equals("Line")) {
+								drawLine(stringListArray);
+							}else if(stringListShape[0].equals("Hexagon")) {
+								drawHexagon(stringListArray);
+							}else if(stringListShape[0].equals("Circle")) {
+								drawCircle(stringListArray);
+							}else if(stringListShape[0].equals("Square")) {
+								drawSquare(stringListArray);
+							}else if(stringListShape[0].equals("Rectangle")) {
+								drawRectangle(stringListArray); 
+							}
+						}else if(stringListCmd[0].equals("Deleted")){
+							
 						}
-					}else if(stringListCmd[0].equals("Deleted")){
 						
 					}
-					
+					getView().repaint();
 				}
-				getView().repaint();
+				
 			}
 		});
 		
@@ -606,30 +588,157 @@ public class Controller {
 		view.repaint();
 	}
 	
-	public void recreate(){
-		if (commandsLogIndex < commandsLog.size()) {
-			commandsLogString = commandsLog.get(commandsLogIndex);
-			commandsLogStringParts = commandsLogString.split(": ");
-			if (commandsLogStringParts[0].equals("Add")){
-				commandsLogStringPartsInner = commandsLogStringParts[1].split(":");
-				if (commandsLogStringPartsInner[0].equals("Point")) {
-					commandsLogStringPartsInnerParams = commandsLogStringPartsInner[1].split(",");
-					System.out.println(commandListIndex + ", " + commandsLogString + ", " );
-					/*AddPoint addPoint = new AddPoint(model,*/
-					/*Point t = new Point(commandsLogStringPartsInnerParams[0], commandsLogStringPartsInnerParams[1], Color.decode(commandsLogStringPartsInnerParams[2]));
-					CmdAddPoint c2 = new CmdAddPoint(model, t);
-					doCmd(c2);*/
-				}/* 
-				else if (commandsLogStringPartsInner[0].equals("Line")){
-					String commandsLogStringPartsInnerParamsLine[];
-					commandsLogStringPartsInnerParamsLine = commandsLogStringPartsInner[1].split(",");
-					Point start = new Point(commandsLogStringPartsInnerParamsLine[0], commandsLogStringPartsInnerParamsLine[1], Color.black);
-					Point end = new Point(commandsLogStringPartsInnerParamsLine[2], commandsLogStringPartsInnerParamsLine[3], Color.black);
-					Line l = new Line(start, end, Color.decode(commandsLogStringPartsInnerParamsLine[4]));
-					CmdAddLine c3 = new CmdAddLine(model, l);
-					doCmd(c3);
-				}*/ 
-			}
-		}
+	public void drawPoint(String stringLine[]) {
+		String px[] = stringLine[3].split(",");
+		String py[] = stringLine[5].split(";");
+		String sr[] = stringLine[8].split(",");
+		String sg[] = stringLine[10].split(",");
+		String sb[] = stringLine[12].split(";");
+		int x = Integer.parseInt(px[0]);
+		int y = Integer.parseInt(py[0]);
+		int r = Integer.parseInt(sr[0]);
+		int g = Integer.parseInt(sg[0]);
+		int b = Integer.parseInt(sb[0]);
+		AddPoint addPoint = new AddPoint(model, new Point(x, y, new Color(r, g, b)));
+		doCommand(addPoint);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
 	}
+	
+	public void drawLine(String stringLine[]) {
+		String startX[] = stringLine[5].split(",");
+		String startY[] = stringLine[7].split("-->");
+		String endX[] = stringLine[11].split(",");
+		String endY[] = stringLine[13].split(";");
+		String lr[] = stringLine[16].split(",");
+		String lg[] = stringLine[18].split(",");
+		String lb[] = stringLine[20].split(";");
+		int sx = Integer.parseInt(startX[0]);
+		int sy = Integer.parseInt(startY[0]);
+		int ex = Integer.parseInt(endX[0]);
+		int ey = Integer.parseInt(endY[0]);
+		int r = Integer.parseInt(lr[0]);
+		int g = Integer.parseInt(lg[0]);
+		int b = Integer.parseInt(lb[0]);
+		AddLine addLine = new AddLine(model, new Line(new Point(sx, sy), new Point(ex, ey), new Color(r, g, b)));
+		doCommand(addLine);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
+	}
+	
+	public void drawHexagon(String stringLine[]) {
+		String cx[] = stringLine[5].split(",");
+		String cy[] = stringLine[7].split(";");
+		String radius[] = stringLine[9].split(";");
+		String lr[] = stringLine[13].split(",");
+		String lg[] = stringLine[15].split(",");
+		String lb[] = stringLine[17].split(";");
+		String ar[] = stringLine[21].split(",");
+		String ag[] = stringLine[23].split(",");
+		String ab[] = stringLine[25].split(";");
+		int x = Integer.parseInt(cx[0]);
+		int y = Integer.parseInt(cy[0]);
+		int r = Integer.parseInt(radius[0]);
+		int lnr = Integer.parseInt(lr[0]);
+		int lng = Integer.parseInt(lg[0]);
+		int lnb = Integer.parseInt(lb[0]);
+		int arr = Integer.parseInt(ar[0]);
+		int arg = Integer.parseInt(ag[0]);
+		int arb = Integer.parseInt(ab[0]);
+		AddHexagon addHexagon = new AddHexagon(model, new HexagonAdapter(x, y, r, new Color(lnr, lng, lnb), new Color(arr, arg, arb)));
+		doCommand(addHexagon);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
+	}
+	
+	public void drawCircle(String stringLine[]) {
+		String cx[] = stringLine[5].split(",");
+		String cy[] = stringLine[7].split(";");
+		String radius[] = stringLine[9].split(";");
+		String lr[] = stringLine[13].split(",");
+		String lg[] = stringLine[15].split(",");
+		String lb[] = stringLine[17].split(";");
+		String ar[] = stringLine[21].split(",");
+		String ag[] = stringLine[23].split(",");
+		String ab[] = stringLine[25].split(";");
+		int x = Integer.parseInt(cx[0]);
+		int y = Integer.parseInt(cy[0]);
+		int r = Integer.parseInt(radius[0]);
+		int lnr = Integer.parseInt(lr[0]);
+		int lng = Integer.parseInt(lg[0]);
+		int lnb = Integer.parseInt(lb[0]);
+		int arr = Integer.parseInt(ar[0]);
+		int arg = Integer.parseInt(ag[0]);
+		int arb = Integer.parseInt(ab[0]);
+		AddCircle addCircle = new AddCircle(model, new Circle(new Point(x, y), r, new Color(lnr, lng, lnb), new Color(arr, arg, arb)));
+		doCommand(addCircle);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
+	}
+	
+	public void drawSquare(String stringLine[]) {
+		String uplcx[] = stringLine[6].split(",");
+		String uplcy[] = stringLine[8].split(";");
+		String radius[] = stringLine[10].split(";");
+		String lr[] = stringLine[14].split(",");
+		String lg[] = stringLine[16].split(",");
+		String lb[] = stringLine[18].split(";");
+		String ar[] = stringLine[22].split(",");
+		String ag[] = stringLine[24].split(",");
+		String ab[] = stringLine[26].split(";");
+		int x = Integer.parseInt(uplcx[0]);
+		int y = Integer.parseInt(uplcy[0]);
+		int r = Integer.parseInt(radius[0]);
+		int lnr = Integer.parseInt(lr[0]);
+		int lng = Integer.parseInt(lg[0]);
+		int lnb = Integer.parseInt(lb[0]);
+		int arr = Integer.parseInt(ar[0]);
+		int arg = Integer.parseInt(ag[0]);
+		int arb = Integer.parseInt(ab[0]);
+		AddSquare addSquare = new AddSquare(model, new Square(new Point(x, y), r, new Color(lnr, lng, lnb), new Color(arr, arg, arb)));
+		doCommand(addSquare);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
+	}
+	
+	public void drawRectangle(String stringLine[]) {
+		String uplcx[] = stringLine[6].split(",");
+		String uplcy[] = stringLine[8].split(";");
+		String stranicaA[] = stringListArray[10].split(";");
+		String stranicaB[] = stringListArray[12].split(";");
+		String lr[] = stringListArray[16].split(",");
+		String lg[] = stringListArray[18].split(",");
+		String lb[] = stringListArray[20].split(";");
+		String ar[] = stringListArray[24].split(",");
+		String ag[] = stringListArray[26].split(",");
+		String ab[] = stringListArray[28].split(";");
+		int x = Integer.parseInt(uplcx[0]);
+		int y = Integer.parseInt(uplcy[0]);
+		int stranicaAA = Integer.parseInt(stranicaA[0]);
+		int stranicaBB = Integer.parseInt(stranicaB[0]);
+		int lnr = Integer.parseInt(lr[0]);
+		int lng = Integer.parseInt(lg[0]);
+		int lnb = Integer.parseInt(lb[0]);
+		int arr = Integer.parseInt(ar[0]);
+		int arg = Integer.parseInt(ag[0]);
+		int arb = Integer.parseInt(ab[0]);
+		AddRectangle addRectangle = new AddRectangle(model, new Rectangle(new Point(x, y), stranicaAA, stranicaBB, new Color(lnr, lng, lnb), new Color(arr, arg, arb)));
+		doCommand(addRectangle);
+		getFrame().getLogTextArea().append(stringListLine  + '\n');
+	}
+	
+	public LinkedList getStringLine(File file) {
+		LinkedList<String> stringList = new LinkedList<String>();
+		BufferedReader br = null;
+		String line;
+		try {
+			br = new BufferedReader(new FileReader(file));
+			
+			while ((line = br.readLine()) != null) {
+				stringList.add(line);
+			}
+			
+			br.close();
+		} 
+		catch (Exception ee) {
+				ee.printStackTrace();
+		}
+		return stringList;
+	}
+	
 }
